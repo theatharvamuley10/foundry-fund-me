@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.19;
+pragma solidity 0.8.30;
 
 import {Script, console} from "forge-std/Script.sol";
 import {FundMe} from "../src/FundMe.sol";
 import {DevOpsTools} from "foundry-devops/src/DevOpsTools.sol";
 
 contract FundFundMe is Script {
-    uint256 public SEND_VALUE = 0.1 ether;
+    uint256 public SEND_VALUE = 0.005 ether;
 
     function fundFundMe(address mostRecentlyDeployed) public {
         vm.startBroadcast();

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+
 // 1. Pragma
 pragma solidity 0.8.30;
 
@@ -15,7 +16,7 @@ contract FundMe {
 
     // State variables
     uint256 public constant MINIMUM_USD = 5e18;
-    address private immutable i_owner;
+    address public immutable i_owner;
     address[] private s_funders;
     mapping(address => uint256) private s_addressToAmountFunded;
     AggregatorV3Interface private s_priceFeed;
@@ -44,8 +45,9 @@ contract FundMe {
     //     i_owner = msg.sender;
     // }
 
-    constructor() {
+    constructor(address _priceFeed) {
         i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(_priceFeed);
     }
 
     /// @notice Funds our contract based on the ETH/USD price
@@ -61,6 +63,7 @@ contract FundMe {
 
     // aderyn-ignore-next-line(centralization-risk,unused-public-function,state-change-without-event))
     function withdraw() public onlyOwner {
+        require(address(this).balance > 0, "No funds to withdraw");
         // aderyn-ignore-next-line(storage-array-length-not-cached,costly-loop)
         for (
             uint256 funderIndex = 0;
@@ -100,21 +103,23 @@ contract FundMe {
 
     /**
      * @notice Gets the amount that an address has funded
-     *  @param fundingAddress the address of the funder
+     *  @param fundersAddress the address of the funder
      *  @return the amount funded
      */
     function getAddressToAmountFunded(
-        address fundingAddress
+        address fundersAddress
     ) public view returns (uint256) {
-        return s_addressToAmountFunded[fundingAddress];
+        return s_addressToAmountFunded[fundersAddress];
     }
 
     function getVersion() public view returns (uint256) {
         return s_priceFeed.version();
     }
 
-    function getFunder(uint256 index) public view returns (address) {
-        return s_funders[index];
+    function getFunderAtIndex(
+        uint256 fundersIndex
+    ) public view returns (address) {
+        return s_funders[fundersIndex];
     }
 
     function getOwner() public view returns (address) {
